@@ -38,6 +38,12 @@ MonteCarlo *mcco  = NULL;
 int main(int argc, char** argv)
 {
    mpiInit(&argc, &argv);
+
+   int rank = -1;
+   auto start_time = std::chrono::high_resolution_clock::now();
+   mpiComm_rank(MPI_COMM_WORLD, &rank);
+   if (rank == 0)  start_time = std::chrono::high_resolution_clock::now();
+
    printBanner(GIT_VERS, GIT_HASH);
 
    Parameters params = getParameters(argc, argv);
@@ -65,7 +71,6 @@ int main(int argc, char** argv)
             mcco->processor_info->comm_mc_world );
    }
 
-
    MC_FASTTIMER_STOP(MC_Fast_Timer::main);
 
    gameOver();
@@ -73,14 +78,21 @@ int main(int argc, char** argv)
    coralBenchmarkCorrectness(mcco, params);
 
 #ifdef HAVE_UVM
-    mcco->~MonteCarlo();
-    cudaFree( mcco );
+   mcco->~MonteCarlo();
+   cudaFree(mcco);
 #else
    delete mcco;
 #endif
 
+   if (rank == 0)
+   {
+      auto end_time = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> duration = end_time - start_time;
+      std::cout << "Runtime: " << duration.count() << " seconds" << std::endl;
+   }
+
    mpiFinalize();
-   
+
    return 0;
 }
 
