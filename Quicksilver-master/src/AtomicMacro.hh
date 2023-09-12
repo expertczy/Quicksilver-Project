@@ -6,6 +6,8 @@
     #define USE_OPENMP_ATOMICS
 #elif HAVE_OPENMP_TARGET
     #define USE_OPENMP_ATOMICS
+#elif HAVE_OPENACC
+    #define USE_OPENACC_ATOMICS
 #endif
 
 
@@ -77,6 +79,23 @@
         #define ATOMIC_CAPTURE( x, v, p ) \
             _Pragma("omp atomic capture") \
             {p = x; x = x + v;}
+
+// #elif defined (USE_OPENACC_ATOMICS)
+//     #define ATOMIC_WRITE(x, v) \
+//         #pragma acc atomic write \
+//         x = v;
+
+//     #define ATOMIC_ADD(x, v) \
+//         #pragma acc atomic \
+//         x += v;
+
+//     #define ATOMIC_UPDATE(x) \
+//         #pragma acc atomic update \
+//         x++;
+
+//     #define ATOMIC_CAPTURE(x, v, p) \
+//         #pragma acc atomic capture \
+        {p = x; x = x + v;}
 
 //If in a serial section, no need to use atomics
 #else

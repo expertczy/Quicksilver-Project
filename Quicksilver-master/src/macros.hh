@@ -25,6 +25,7 @@
 #ifdef HAVE_OPENMP
     #include <omp.h>
 #else
+    #include <openacc.h>
     #include <iostream>
     #include <cstdlib>
     #define omp_get_thread_num()   0

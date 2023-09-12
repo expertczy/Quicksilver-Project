@@ -4,3 +4,7 @@
        { printf("OpenMP Looping over %d cores\n",num_physical_cores); }
     #pragma omp parallel for schedule (static) num_threads(num_physical_cores)
 #endif
+
+#if defined(HAVE_OPENACC)
+    #pragma acc parallel loop gang
+#endif

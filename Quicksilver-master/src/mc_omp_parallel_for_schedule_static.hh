@@ -3,3 +3,7 @@
        { printf("OpenMP Looping over %d threads\n",omp_get_max_threads()); }
     #pragma omp parallel for schedule (static)
 #endif
+
+#if defined(HAVE_OPENACC)
+    #pragma acc parallel loop gang
+#endif

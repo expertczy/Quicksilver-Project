@@ -3,22 +3,8 @@ SHELL = /bin/bash
 ###############################################################################
 # Serial
 ###############################################################################
-# OPENMP_FLAGS = 
-# OPENMP_LDFLAGS =
-# OPTFLAGS = -g -O2
-
-# CXX=g++
-# CXXFLAGS = -std=c++11  $(OPTFLAGS) -Wpedantic
-# CPPFLAGS = $(OPENMP_FLAGS)
-# LDFLAGS = $(OPENMP_LDFLAGS) 
-
-
-###############################################################################
-# Very simple GCC build with OpenMP but without MPI.  
-# This works on a Macbook (if gcc is installed)
-###############################################################################
-OPENMP_FLAGS = -DHAVE_OPENMP -fopenmp
-OPENMP_LDFLAGS = -fopenmp
+OPENMP_FLAGS = 
+OPENMP_LDFLAGS =
 OPTFLAGS = -g -O2
 
 CXX=g++
@@ -28,7 +14,19 @@ LDFLAGS = $(OPENMP_LDFLAGS)
 
 
 ###############################################################################
-### GCC -- with MPI and OpenMP 
+# OpenMP
+###############################################################################
+# OPENMP_FLAGS = -DHAVE_OPENMP -fopenmp
+# OPENMP_LDFLAGS = -fopenmp
+# OPTFLAGS = -g -O2
+
+# CXX=g++
+# CXXFLAGS = -std=c++11  $(OPTFLAGS) -Wpedantic
+# CPPFLAGS = $(OPENMP_FLAGS)
+# LDFLAGS = $(OPENMP_LDFLAGS) 
+
+###############################################################################
+### MPI and OpenMP 
 ###############################################################################
 # OPENMP_FLAGS = -DHAVE_OPENMP -fopenmp
 # OPENMP_LDFLAGS = -fopenmp
@@ -41,32 +39,44 @@ LDFLAGS = $(OPENMP_LDFLAGS)
 # LDFLAGS = $(OPENMP_LDFLAGS) 
 
 ###############################################################################
-# OpenMP 4.5 on LLNL CORAL EA nodes
+# NVCC
 ###############################################################################
-# CUDA_PATH = /gpfs/warwick/scrtp/avon/eb/software/CUDAcore/11.1.1
+# OPENMP_FLAGS = 
+# OPENMP_LDFLAGS = 
+# OPTFLAGS =
 
-# # Choose one of these compilers
-# # CXX=mpiclang++-gpu
-# CXX=mpixlC-gpu
-
-# # Uncomment next line to run on CPU only (disable GPUs)
-# OPENMP_OFFLOAD_FLAGS = -DUSE_OPENMP_NO_GPU 
-
-# OPENMP_OFFLOAD_FLAGS += -DHAVE_OPENMP_TARGET -mcpu=power8  
-# OPENMP_FLAGS = -DHAVE_OPENMP -fopenmp ${OPENMP_OFFLOAD_FLAGS}
-# OPTFLAGS = -O2
-
-# CUDA_FLAGS = -I${CUDA_PATH}/include/
-# CUDA_LDFLAGS = -L${CUDA_PATH}/lib64/ -lcuda -lcudart
-
-# CXXFLAGS = -std=c++11 $(OPTFLAGS)
-# CPPFLAGS = -DHAVE_MPI $(OPENMP_FLAGS) $(CUDA_FLAGS) 
-# LDFLAGS  = $(CUDA_LDFLAGS)
-
+# CXX=nvc++
+# CXXFLAGS =  $(OPTFLAGS)
+# CPPFLAGS = $(OPENMP_FLAGS)
+# LDFLAGS = $(OPENMP_LDFLAGS) 
 
 ###############################################################################
+# OpenAcc CPU
+###############################################################################
+# OPENMP_FLAGS = -DHAVE_OPENACC 
+# OPENMP_LDFLAGS = 
+# OPTFLAGS =
+
+# CXX=nvc++
+# CXXFLAGS = -acc=multicore $(OPTFLAGS)
+# CPPFLAGS = $(OPENMP_FLAGS)
+# LDFLAGS = $(OPENMP_LDFLAGS) 
+
+###############################################################################
+# OpenAcc GPU
+###############################################################################
+# OPENMP_FLAGS = -DHAVE_OPENACC_GPU
+# OPENMP_LDFLAGS = 
+# OPTFLAGS =
+
+# CXX=nvc++
+# CXXFLAGS = -acc -gpu=cc75 $(OPTFLAGS)
+# CPPFLAGS = $(OPENMP_FLAGS)
+# LDFLAGS = $(OPENMP_LDFLAGS) 
+
+##############################################################################
 # Cuda
-###############################################################################
+##############################################################################
 # CUDA_PATH = /gpfs/warwick/scrtp/avon/eb/software/CUDAcore/11.1.1
 # HOST_COMPILER = /gpfs/warwick/scrtp/avon/eb/software/OpenMPI/4.0.5-gcccuda-2020b/bin/mpicxx
 # OPTFLAGS = -O2 
@@ -78,7 +88,6 @@ LDFLAGS = $(OPENMP_LDFLAGS)
 # CXXFLAGS += --compiler-bindir=$(HOST_COMPILER)
 # CPPFLAGS = -x cu -dc -DHAVE_MPI -DHAVE_ASYNC_MPI
 # LDFLAGS  = $(CUDA_LDFLAGS) 
-# #LDFLAGS += ${CUDA_PATH}/lib64/libnvToolsExt.so
 
 
 ################################################################################
@@ -86,10 +95,6 @@ LDFLAGS = $(OPENMP_LDFLAGS)
 ### You are likely to be eaten by a grue.                                    ###
 ################################################################################
 
-#GITVERS := -D'GIT_VERS="$(shell git log -n 1 |  grep Date   | awk -F " " '{print $$6 "-" $$3 "-" $$4 "-" $$5}')"'
-#GITHASH := -D'GIT_HASH="$(shell git log -n 1 |  grep commit | awk -F " " '{print $$2}')"'
-# GITVERS := "$(shell git log -n 1 |  grep Date   | awk -F " " '{print $$6 "-" $$3 "-" $$4 "-" $$5}')"
-# GITHASH := "$(shell git log -n 1 |  grep commit | awk -F " " '{print $$2}')"
 
 Quicksilver_EXE=qs
 
@@ -160,10 +165,10 @@ ${Quicksilver_EXE}: git_hash.hh git_vers.hh ${CC_OBJECTS}
 	${CXX} ${CXXFLAGS} ${LDFLAGS} -o ${Quicksilver_EXE} ${CC_OBJECTS}
 
 clean:
-	rm -f *.o git_hash.hh git_vers.hh .depend load.map *.core *.optrpt
+	rm -f *.o git_hash.hh git_vers.hh .depend load.map *.core *.optrpt qs
 
 cleanall:
-	rm -f *.o git_hash.hh git_vers.hh .depend load.map *.core *.optrpt *.out
+	rm -f *.o git_hash.hh git_vers.hh .depend load.map *.core *.optrpt *.out qs
 
 distclean: clean
 	rm -f ${Quicksilver_EXE}   .depend.bak

@@ -16,13 +16,19 @@
     #define HOST_DEVICE_CUDA
     #define HOST_DEVICE_CLASS _Pragma( "omp declare target" )
     #define HOST_DEVICE_END _Pragma("omp end declare target")
-    //#define HOST_DEVICE #pragma omp declare target
+    // #define HOST_DEVICE #pragma omp declare target
     //#define HOST_DEVICE_END #pragma omp end declare target
     //#define DEVICE #pragma omp declare target 
     //#define DEVICE_END #pragma omp end declare target
     //#define HOST 
     #define HOST_END 
     #define GLOBAL
+#elif HAVE_OPENACC_GPU
+    #define HOST_DEVICE _Pragma("acc routine")
+    #define HOST_DEVICE_CUDA _Pragma("acc routine")
+    #define HOST_DEVICE_CLASS
+    #define HOST_DEVICE_END
+    #define DEVICE _Pragma("acc routine")
 #else
     #define HOST_DEVICE
     #define HOST_DEVICE_CUDA
